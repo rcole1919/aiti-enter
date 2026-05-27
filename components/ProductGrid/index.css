@@ -1,0 +1,13 @@
+.product-grid {
+    padding: 20px;
+    max-width: 1200px;
+}
+
+.product-grid .MuiGrid-container {
+    justify-content: center;
+}
+
+.product-grid .MuiGrid-item {
+    display: flex;
+    justify-content: center;
+}
