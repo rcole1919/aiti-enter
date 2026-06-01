@@ -1,0 +1,77 @@
+"use client";
+
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import { useCart } from "../../context/CartContext";
+import styles from "./index.module.css";
+
+export default function CartList() {
+  const { items, removeFromCart, updateQuantity, totalPrice } = useCart();
+
+  if (items.length === 0) {
+    return (
+      <p className={styles.empty}>
+        Корзина пуста. Добавьте товары из каталога.
+      </p>
+    );
+  }
+
+  return (
+    <div className={styles.root}>
+      <ul className={styles.items}>
+        {items.map((item) => (
+          <li key={item.id} className={styles.item}>
+            <img
+              src={item.image}
+              alt={item.name}
+              className={styles.image}
+            />
+            <div className={styles.info}>
+              <Typography variant="h6" className={styles.name}>
+                {item.name}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {item.price.toLocaleString("ru-RU")} ₽
+              </Typography>
+            </div>
+            <div className={styles.quantity}>
+              <IconButton
+                size="small"
+                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                aria-label="Уменьшить количество"
+              >
+                <RemoveIcon />
+              </IconButton>
+              <span className={styles.count}>{item.quantity}</span>
+              <IconButton
+                size="small"
+                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                aria-label="Увеличить количество"
+              >
+                <AddIcon />
+              </IconButton>
+            </div>
+            <Typography variant="h6" className={styles.total}>
+              {(item.price * item.quantity).toLocaleString("ru-RU")} ₽
+            </Typography>
+            <IconButton
+              onClick={() => removeFromCart(item.id)}
+              aria-label="Удалить из корзины"
+              color="error"
+            >
+              <DeleteIcon />
+            </IconButton>
+          </li>
+        ))}
+      </ul>
+      <div className={styles.summary}>
+        <Typography variant="h5">
+          Итого: {totalPrice.toLocaleString("ru-RU")} ₽
+        </Typography>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,13 @@
+.grid {
+  padding: 20px;
+  max-width: 1200px;
+}
+
+.grid :global(.MuiGrid-container) {
+  justify-content: center;
+}
+
+.grid :global(.MuiGrid-item) {
+  display: flex;
+  justify-content: center;
+}
