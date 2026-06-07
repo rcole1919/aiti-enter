@@ -27,7 +27,6 @@
 }
 
 .card :global(.MuiTypography-h6).name {
-  margin: 8px 0;
   font-weight: 600;
   color: #333;
   line-height: 1.3;
