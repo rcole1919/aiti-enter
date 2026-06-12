@@ -15,9 +15,16 @@ type ProductCardProps = {
 };
 
 const ProductCard = ({ product }: ProductCardProps) => {
-  const { addToCart } = useCart();
+  const { addToCart, showLimitNotification } = useCart();
   const hasDiscount = Boolean(product.discount && product.discount > 0);
   const discountedPrice = getDiscountedPrice(product.price, product.discount);
+
+  const handleAddToCart = () => {
+    const added = addToCart(product);
+    if (!added) {
+      showLimitNotification();
+    }
+  };
 
   return (
     <Card className={styles.card}>
@@ -52,7 +59,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           variant="contained"
           color="primary"
           className={styles.addButton}
-          onClick={() => addToCart(product)}
+          onClick={handleAddToCart}
         >
           Добавить в корзину
         </Button>

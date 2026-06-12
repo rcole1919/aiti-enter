@@ -10,7 +10,15 @@ import { getDiscountedPrice } from "../../utils/price";
 import styles from "./index.module.css";
 
 export default function CartList() {
-  const { items, removeFromCart, updateQuantity, totalPrice } = useCart();
+  const { items, removeFromCart, updateQuantity, totalPrice, showLimitNotification } =
+    useCart();
+
+  const handleIncreaseQuantity = (productId: number, currentQuantity: number) => {
+    const updated = updateQuantity(productId, currentQuantity + 1);
+    if (!updated) {
+      showLimitNotification();
+    }
+  };
 
   if (items.length === 0) {
     return (
@@ -61,7 +69,9 @@ export default function CartList() {
                 <span className={styles.count}>{item.quantity}</span>
                 <IconButton
                   size="small"
-                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                  onClick={() =>
+                    handleIncreaseQuantity(item.id, item.quantity)
+                  }
                   aria-label="Увеличить количество"
                 >
                   <AddIcon />

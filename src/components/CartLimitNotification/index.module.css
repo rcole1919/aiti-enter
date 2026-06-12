@@ -1,0 +1,9 @@
+.snackbar {
+  top: 24px;
+  right: 24px;
+}
+
+.alert {
+  width: 100%;
+  font-size: 0.95rem;
+}
