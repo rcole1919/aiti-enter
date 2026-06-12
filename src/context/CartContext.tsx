@@ -4,7 +4,10 @@ import React, { createContext, useContext, useState, useCallback } from "react";
 import CartLimitNotification from "../components/CartLimitNotification";
 import { useCartLimitNotification } from "../components/CartLimitNotification/useCartLimitNotification";
 import { MAX_CART_ITEM_QUANTITY } from "../constants/cart";
+import { PROMO_DISCOUNT_PERCENT, VALID_PROMO_CODE } from "../constants/promo";
 import { getDiscountedPrice } from "../utils/price";
+
+export type ApplyPromoResult = "success" | "invalid" | "already_applied";
 
 export type Product = {
   id: number;
@@ -21,11 +24,14 @@ export type CartItem = Product & {
 
 type CartContextValue = {
   items: CartItem[];
+  isPromoApplied: boolean;
   addToCart: (product: Product) => boolean;
   removeFromCart: (productId: number) => void;
   updateQuantity: (productId: number, quantity: number) => boolean;
+  applyPromoCode: (code: string) => ApplyPromoResult;
   totalItems: number;
   totalPrice: number;
+  discountedTotalPrice: number;
   showLimitNotification: () => void;
 };
 
@@ -33,6 +39,7 @@ const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [isPromoApplied, setIsPromoApplied] = useState(false);
   const {
     open: limitNotificationOpen,
     notificationKey,
@@ -86,22 +93,42 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
+  const applyPromoCode = useCallback(
+    (code: string): ApplyPromoResult => {
+      if (isPromoApplied) {
+        return "already_applied";
+      }
+      if (code === VALID_PROMO_CODE) {
+        setIsPromoApplied(true);
+        return "success";
+      }
+      return "invalid";
+    },
+    [isPromoApplied]
+  );
+
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce(
     (sum, item) =>
       sum + getDiscountedPrice(item.price, item.discount) * item.quantity,
     0
   );
+  const discountedTotalPrice = isPromoApplied
+    ? getDiscountedPrice(totalPrice, PROMO_DISCOUNT_PERCENT)
+    : totalPrice;
 
   return (
     <CartContext.Provider
       value={{
         items,
+        isPromoApplied,
         addToCart,
         removeFromCart,
         updateQuantity,
+        applyPromoCode,
         totalItems,
         totalPrice,
+        discountedTotalPrice,
         showLimitNotification,
       }}
     >

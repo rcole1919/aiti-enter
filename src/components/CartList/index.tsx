@@ -6,12 +6,20 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { useCart } from "../../context/CartContext";
+import PromoCode from "../PromoCode";
 import { getDiscountedPrice } from "../../utils/price";
 import styles from "./index.module.css";
 
 export default function CartList() {
-  const { items, removeFromCart, updateQuantity, totalPrice, showLimitNotification } =
-    useCart();
+  const {
+    items,
+    removeFromCart,
+    updateQuantity,
+    totalPrice,
+    discountedTotalPrice,
+    isPromoApplied,
+    showLimitNotification,
+  } = useCart();
 
   const handleIncreaseQuantity = (productId: number, currentQuantity: number) => {
     const updated = updateQuantity(productId, currentQuantity + 1);
@@ -92,9 +100,21 @@ export default function CartList() {
         })}
       </ul>
       <div className={styles.summary}>
-        <Typography variant="h5">
-          Итого: {totalPrice.toLocaleString("ru-RU")} ₽
-        </Typography>
+        <PromoCode />
+        {isPromoApplied ? (
+          <div className={styles.totals}>
+            <Typography variant="body1" className={styles.beforePromo}>
+              Сумма до скидки: {totalPrice.toLocaleString("ru-RU")} ₽
+            </Typography>
+            <Typography variant="h5">
+              Итого со скидкой: {discountedTotalPrice.toLocaleString("ru-RU")} ₽
+            </Typography>
+          </div>
+        ) : (
+          <Typography variant="h5">
+            Итого: {totalPrice.toLocaleString("ru-RU")} ₽
+          </Typography>
+        )}
       </div>
     </div>
   );

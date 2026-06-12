@@ -83,3 +83,15 @@
   text-align: right;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
+
+.totals {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.beforePromo {
+  text-decoration: line-through;
+  color: #999;
+}
