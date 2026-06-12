@@ -1,0 +1,33 @@
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 32px;
+  padding: 10px 18px;
+  color: #1976d2;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+  transition:
+    color 0.2s ease-in-out,
+    background-color 0.2s ease-in-out,
+    border-color 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out,
+    transform 0.2s ease-in-out;
+}
+
+.link:hover {
+  color: #1565c0;
+  background-color: #f5f9ff;
+  border-color: #1976d2;
+  box-shadow: 0 4px 8px rgba(25, 118, 210, 0.12);
+  transform: translateX(-2px);
+}
+
+.icon {
+  font-size: 1.1rem !important;
+}

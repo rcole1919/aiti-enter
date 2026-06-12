@@ -6,11 +6,19 @@ import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import { useCart } from "../../context/CartContext";
+import { useCart, type Product } from "../../context/CartContext";
+import { getDiscountedPrice } from "../../utils/price";
 import styles from "./index.module.css";
 
-const ProductCard = ({ product }) => {
+type ProductCardProps = {
+  product: Product;
+};
+
+const ProductCard = ({ product }: ProductCardProps) => {
   const { addToCart } = useCart();
+  const hasDiscount = Boolean(product.discount && product.discount > 0);
+  const discountedPrice = getDiscountedPrice(product.price, product.discount);
+
   return (
     <Card className={styles.card}>
       <CardMedia
@@ -30,9 +38,16 @@ const ProductCard = ({ product }) => {
         >
           {product.description}
         </Typography>
-        <Typography variant="h5" color="primary" className={styles.price}>
-          {product.price.toLocaleString("ru-RU")} ₽
-        </Typography>
+        <div className={styles.priceBlock}>
+          {hasDiscount && (
+            <Typography variant="body2" className={styles.oldPrice}>
+              {product.price.toLocaleString("ru-RU")} ₽
+            </Typography>
+          )}
+          <Typography variant="h5" color="primary" className={styles.price}>
+            {discountedPrice.toLocaleString("ru-RU")} ₽
+          </Typography>
+        </div>
         <Button
           variant="contained"
           color="primary"

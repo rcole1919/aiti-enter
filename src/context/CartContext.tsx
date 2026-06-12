@@ -1,11 +1,13 @@
 "use client";
 
 import React, { createContext, useContext, useState, useCallback } from "react";
+import { getDiscountedPrice } from "../utils/price";
 
 export type Product = {
   id: number;
   name: string;
   price: number;
+  discount?: number;
   description: string;
   image: string;
 };
@@ -60,7 +62,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) =>
+      sum + getDiscountedPrice(item.price, item.discount) * item.quantity,
     0
   );
 

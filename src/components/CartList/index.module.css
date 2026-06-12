@@ -44,6 +44,18 @@
   font-weight: 600 !important;
 }
 
+.priceBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.oldPrice {
+  text-decoration: line-through;
+  color: #999;
+  font-size: 0.75rem;
+}
+
 .quantity {
   display: flex;
   align-items: center;

@@ -42,8 +42,20 @@
   -webkit-box-orient: vertical;
 }
 
-.price {
+.priceBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   margin: 8px 0;
+}
+
+.oldPrice {
+  text-decoration: line-through;
+  color: #999;
+  font-size: 0.875rem;
+}
+
+.price {
   font-weight: 700;
   color: #1976d2;
 }
