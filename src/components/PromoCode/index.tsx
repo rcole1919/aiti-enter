@@ -4,11 +4,12 @@ import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { useCart } from "../../context/CartContext";
+import { useCartActions, useCartState } from "../../context/CartContext";
 import styles from "./index.module.css";
 
 export default function PromoCode() {
-  const { isPromoApplied, applyPromoCode } = useCart();
+  const { isPromoApplied } = useCartState();
+  const { applyPromoCode } = useCartActions();
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
 

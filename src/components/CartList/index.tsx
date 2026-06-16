@@ -5,21 +5,16 @@ import Typography from "@mui/material/Typography";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import { useCart } from "../../context/CartContext";
+import { useCartActions, useCartState } from "../../context/CartContext";
 import PromoCode from "../PromoCode";
 import { getDiscountedPrice } from "../../utils/price";
 import styles from "./index.module.css";
 
 export default function CartList() {
-  const {
-    items,
-    removeFromCart,
-    updateQuantity,
-    totalPrice,
-    discountedTotalPrice,
-    isPromoApplied,
-    showLimitNotification,
-  } = useCart();
+  const { items, totalPrice, discountedTotalPrice, isPromoApplied } =
+    useCartState();
+  const { removeFromCart, updateQuantity, showLimitNotification } =
+    useCartActions();
 
   const handleIncreaseQuantity = (productId: number, currentQuantity: number) => {
     const updated = updateQuantity(productId, currentQuantity + 1);

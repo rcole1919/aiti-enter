@@ -1,6 +1,14 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+  useEffect,
+} from "react";
 import CartLimitNotification from "../components/CartLimitNotification";
 import { useCartLimitNotification } from "../components/CartLimitNotification/useCartLimitNotification";
 import { MAX_CART_ITEM_QUANTITY } from "../constants/cart";
@@ -22,30 +30,39 @@ export type CartItem = Product & {
   quantity: number;
 };
 
-type CartContextValue = {
+type CartStateValue = {
   items: CartItem[];
   isPromoApplied: boolean;
+  totalItems: number;
+  totalPrice: number;
+  discountedTotalPrice: number;
+};
+
+type CartActionsValue = {
   addToCart: (product: Product) => boolean;
   removeFromCart: (productId: number) => void;
   updateQuantity: (productId: number, quantity: number) => boolean;
   applyPromoCode: (code: string) => ApplyPromoResult;
-  totalItems: number;
-  totalPrice: number;
-  discountedTotalPrice: number;
   showLimitNotification: () => void;
 };
 
-const CartContext = createContext<CartContextValue | null>(null);
+const CartStateContext = createContext<CartStateValue | null>(null);
+const CartActionsContext = createContext<CartActionsValue | null>(null);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isPromoApplied, setIsPromoApplied] = useState(false);
+  const isPromoAppliedRef = useRef(isPromoApplied);
   const {
     open: limitNotificationOpen,
     notificationKey,
     showNotification: showLimitNotification,
     hideNotification: hideLimitNotification,
   } = useCartLimitNotification();
+
+  useEffect(() => {
+    isPromoAppliedRef.current = isPromoApplied;
+  }, [isPromoApplied]);
 
   const addToCart = useCallback((product: Product): boolean => {
     let added = false;
@@ -93,59 +110,94 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
-  const applyPromoCode = useCallback(
-    (code: string): ApplyPromoResult => {
-      if (isPromoApplied) {
-        return "already_applied";
-      }
-      if (code === VALID_PROMO_CODE) {
-        setIsPromoApplied(true);
-        return "success";
-      }
-      return "invalid";
-    },
-    [isPromoApplied]
+  const applyPromoCode = useCallback((code: string): ApplyPromoResult => {
+    if (isPromoAppliedRef.current) {
+      return "already_applied";
+    }
+    if (code === VALID_PROMO_CODE) {
+      setIsPromoApplied(true);
+      return "success";
+    }
+    return "invalid";
+  }, []);
+
+  const totalItems = useMemo(
+    () => items.reduce((sum, item) => sum + item.quantity, 0),
+    [items]
   );
 
-  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = items.reduce(
-    (sum, item) =>
-      sum + getDiscountedPrice(item.price, item.discount) * item.quantity,
-    0
+  const totalPrice = useMemo(
+    () =>
+      items.reduce(
+        (sum, item) =>
+          sum + getDiscountedPrice(item.price, item.discount) * item.quantity,
+        0
+      ),
+    [items]
   );
-  const discountedTotalPrice = isPromoApplied
-    ? getDiscountedPrice(totalPrice, PROMO_DISCOUNT_PERCENT)
-    : totalPrice;
+
+  const discountedTotalPrice = useMemo(
+    () =>
+      isPromoApplied
+        ? getDiscountedPrice(totalPrice, PROMO_DISCOUNT_PERCENT)
+        : totalPrice,
+    [isPromoApplied, totalPrice]
+  );
+
+  const stateValue = useMemo(
+    () => ({
+      items,
+      isPromoApplied,
+      totalItems,
+      totalPrice,
+      discountedTotalPrice,
+    }),
+    [items, isPromoApplied, totalItems, totalPrice, discountedTotalPrice]
+  );
+
+  const actionsValue = useMemo(
+    () => ({
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      applyPromoCode,
+      showLimitNotification,
+    }),
+    [
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      applyPromoCode,
+      showLimitNotification,
+    ]
+  );
 
   return (
-    <CartContext.Provider
-      value={{
-        items,
-        isPromoApplied,
-        addToCart,
-        removeFromCart,
-        updateQuantity,
-        applyPromoCode,
-        totalItems,
-        totalPrice,
-        discountedTotalPrice,
-        showLimitNotification,
-      }}
-    >
-      {children}
-      <CartLimitNotification
-        open={limitNotificationOpen}
-        notificationKey={notificationKey}
-        onClose={hideLimitNotification}
-      />
-    </CartContext.Provider>
+    <CartActionsContext.Provider value={actionsValue}>
+      <CartStateContext.Provider value={stateValue}>
+        {children}
+        <CartLimitNotification
+          open={limitNotificationOpen}
+          notificationKey={notificationKey}
+          onClose={hideLimitNotification}
+        />
+      </CartStateContext.Provider>
+    </CartActionsContext.Provider>
   );
 }
 
-export function useCart() {
-  const context = useContext(CartContext);
+export function useCartState() {
+  const context = useContext(CartStateContext);
   if (!context) {
-    throw new Error("useCart must be used within CartProvider");
+    throw new Error("useCartState must be used within CartProvider");
+  }
+  return context;
+}
+
+export function useCartActions() {
+  const context = useContext(CartActionsContext);
+  if (!context) {
+    throw new Error("useCartActions must be used within CartProvider");
   }
   return context;
 }

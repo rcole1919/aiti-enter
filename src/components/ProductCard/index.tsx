@@ -6,7 +6,7 @@ import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import { useCart, type Product } from "../../context/CartContext";
+import { useCartActions, type Product } from "../../context/CartContext";
 import { getDiscountedPrice } from "../../utils/price";
 import styles from "./index.module.css";
 
@@ -15,7 +15,7 @@ type ProductCardProps = {
 };
 
 const ProductCard = ({ product }: ProductCardProps) => {
-  const { addToCart, showLimitNotification } = useCart();
+  const { addToCart, showLimitNotification } = useCartActions();
   const hasDiscount = Boolean(product.discount && product.discount > 0);
   const discountedPrice = getDiscountedPrice(product.price, product.discount);
 
