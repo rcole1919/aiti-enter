@@ -1,0 +1,29 @@
+:root {
+  /* Основные */
+  --color-primary: #1976d2;
+  --color-primary-dark: #1565c0;
+  --color-primary-tint: #f5f9ff;
+  --color-on-primary: #fff;
+
+  /* Текст */
+  --color-text-primary: #333;
+  --color-text-secondary: #666;
+  --color-text-muted: #999;
+
+  /* Фон */
+  --color-bg-page: #f5f5f5;
+  --color-bg-surface: #fff;
+
+  /* Границы */
+  --color-border: #e0e0e0;
+
+  /* Статусы */
+  --color-error: #d32f2f;
+  --color-success: #2e7d32;
+
+  /* Тени */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
+  --shadow-primary: 0 4px 8px rgba(25, 118, 210, 0.12);
+}
